@@ -21,8 +21,8 @@
   <PropertyGroup Label="Common Properties">
     <!-- Solution-wide version information -->
     <VersionMajor>1</VersionMajor>
-    <VersionMinor>1</VersionMinor>
-    <VersionPatch>1</VersionPatch>
+    <VersionMinor>2</VersionMinor>
+    <VersionPatch>0</VersionPatch>
     <VersionRevision>0</VersionRevision>
     
     <!-- Semantic versioning -->
