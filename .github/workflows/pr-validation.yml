@@ -58,18 +58,43 @@ jobs:
       - name: Build solution
         run: dotnet build --configuration Release --no-restore
 
-      - name: Run all unit tests (205 tests)
+      - name: Run all unit tests
         uses: ./.github/actions/run-tests
         with:
           project-path: MyWebApp.Tests.Unit/MyWebApp.Tests.Unit.csproj
           configuration: Release
           logger: 'trx;LogFileName=pr-test-results.trx'
 
+      - name: Extract test count from results
+        id: extract-test-count
+        if: always()
+        run: |
+          # Parse test results to get counts
+          if [ -f "**/pr-test-results.trx" ]; then
+            TEST_TOTAL=$(grep -oP 'total="\K[0-9]+' **/pr-test-results.trx | head -1)
+            TEST_PASSED=$(grep -oP 'passed="\K[0-9]+' **/pr-test-results.trx | head -1)
+            TEST_FAILED=$(grep -oP 'failed="\K[0-9]+' **/pr-test-results.trx | head -1)
+            
+            # Set defaults if not found
+            TEST_TOTAL=${TEST_TOTAL:-"unknown"}
+            TEST_PASSED=${TEST_PASSED:-"unknown"}
+            TEST_FAILED=${TEST_FAILED:-"0"}
+          else
+            TEST_TOTAL="unknown"
+            TEST_PASSED="unknown"
+            TEST_FAILED="0"
+          fi
+          
+          echo "test-total=$TEST_TOTAL" >> $GITHUB_OUTPUT
+          echo "test-passed=$TEST_PASSED" >> $GITHUB_OUTPUT
+          echo "test-failed=$TEST_FAILED" >> $GITHUB_OUTPUT
+          echo "📊 Tests: $TEST_PASSED/$TEST_TOTAL passed"
+
       - name: Publish test results
         uses: dorny/test-reporter@v1
         if: always()
         with:
-          name: PR Test Results (205 tests)
+          name: PR Test Results (${{ steps.extract-test-count.outputs.test-passed }}/${{ steps.extract-test-count.outputs.test-total }} passed)
           path: '**/pr-test-results.trx'
           reporter: dotnet-trx
           fail-on-error: true
@@ -122,16 +147,19 @@ jobs:
           ### ✅ Checks Performed
           - **Code Formatting**: ${{ steps.format-check.outcome }}
           - **Build**: ${{ job.status }}
-          - **Unit Tests**: 205 tests executed
-          - **Code Coverage**: Generated and commented on PR
+          - **Unit Tests**: ${{ steps.extract-test-count.outputs.test-passed }}/${{ steps.extract-test-count.outputs.test-total }} passed
+          - **Code Coverage**: Generated and commented on PR (Target: >80%)
           - **Security Scan**: Vulnerability check completed
           
           ### 📊 Quality Gates
           - Code formatting compliance
-          - All tests must pass
+          - All tests must pass (${{ steps.extract-test-count.outputs.test-passed }}/${{ steps.extract-test-count.outputs.test-total }})
           - Code coverage target: >80%
           - No vulnerable dependencies
           
           ### 🎯 Next Steps
           Please address any failing checks before requesting review.
+          
+          ### ℹ️ Note
+          This is PR validation only. Full CI build with artifact creation runs after merge.
           EOF
