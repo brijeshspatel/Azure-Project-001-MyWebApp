@@ -64,6 +64,52 @@ The API will be available at `https://localhost:7xxx` (port may vary). Swagger U
 
 - **GET** `/weatherforecast` - Returns a 5-day weather forecast
 
+### Query Parameters
+
+- `days` (optional): Number of days for the forecast (1-30, default: 5)
+- `location` (optional): Location name for the forecast (max 100 characters)
+
+### Error Responses
+
+All errors follow RFC 7807 Problem Details format:
+
+- **400 Bad Request** - Validation errors or invalid input
+- **404 Not Found** - Resource not found
+- **500 Internal Server Error** - Unexpected server errors
+
+Example error response:
+```json
+{
+  "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
+  "title": "One or more validation errors occurred.",
+  "status": 400,
+  "detail": "One or more validation errors occurred.",
+  "instance": "/api/weatherforecast",
+  "errors": {
+    "Days": ["The number of days cannot exceed 30."]
+  },
+  "errorCode": "VAL000",
+  "traceId": "0af7651916cd43dd8448eb211c80319c",
+  "spanId": "b7ad6b7169203331"
+}
+```
+
+### Distributed Tracing
+
+The API implements W3C Trace Context standard for distributed tracing:
+
+- **traceId**: Globally unique identifier (32-char hex) for the entire request across all services
+- **spanId**: Unique identifier (16-char hex) for this specific operation
+- **parentSpanId**: Identifier of the parent operation (for distributed systems)
+
+These correlation IDs enable:
+- End-to-end request tracking across microservices
+- Performance monitoring and bottleneck identification
+- Error diagnosis in distributed systems
+- Integration with Azure Application Insights and OpenTelemetry
+
+For more details, see [W3C Trace Context Implementation](.docs/W3C_TRACE_CONTEXT_IMPLEMENTATION.md).
+
 ## Development
 
 ### Building
@@ -96,6 +142,12 @@ The solution uses centralized versioning through `Directory.Build.props`:
 - ✅ Centralized build configuration
 - ✅ Unit test project setup
 - ✅ EditorConfig for code consistency
+- ✅ Global exception handling with RFC 7807 Problem Details
+- ✅ FluentValidation for request validation
+- ✅ Structured error responses
+- ✅ W3C Trace Context distributed tracing
+- ✅ Azure Application Insights ready
+- ✅ OpenTelemetry compatible
 
 ## Contributing
 

@@ -17,6 +17,10 @@ public class Program
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
 
+        // Register exception handler
+        builder.Services.AddExceptionHandler<Middleware.GlobalExceptionHandler>();
+        builder.Services.AddProblemDetails();
+
         // Register FluentValidation validators
         builder.Services.AddValidatorsFromAssemblyContaining<MyWebApp.Core.Validators.GetWeatherForecastRequestValidator>();
 
@@ -31,6 +35,9 @@ public class Program
             app.UseSwagger();
             app.UseSwaggerUI();
         }
+
+        // Add exception handler middleware
+        app.UseExceptionHandler();
 
         app.UseHttpsRedirection();
 
