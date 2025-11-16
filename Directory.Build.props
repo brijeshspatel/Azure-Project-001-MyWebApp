@@ -1,0 +1,96 @@
+<Project>
+
+  <!-- 
+    ============================================================================
+    Centralised Build Properties and Versioning Strategy
+    ============================================================================
+    
+    This file defines common build properties and versioning for all projects
+    in the solution, following .NET best practices and Semantic Versioning 2.0.
+    
+    Versioning Strategy:
+    - Version Format: MAJOR.MINOR.PATCH
+    - AssemblyVersion: Changes only with breaking changes (MAJOR)
+    - FileVersion: Reflects the exact build (MAJOR.MINOR.PATCH.BUILD)
+    - InformationalVersion: Full semantic version with metadata
+    
+    Change Log:
+    - 1.0.0 (16-Nov-2025): Initial release with clean architecture
+  -->
+
+  <PropertyGroup Label="Common Properties">
+    <!-- Solution-wide version information -->
+    <VersionMajor>1</VersionMajor>
+    <VersionMinor>0</VersionMinor>
+    <VersionPatch>0</VersionPatch>
+    <VersionRevision>0</VersionRevision>
+    
+    <!-- Semantic versioning -->
+    <VersionPrefix>$(VersionMajor).$(VersionMinor).$(VersionPatch)</VersionPrefix>
+    <Version>$(VersionPrefix)</Version>
+    
+    <!-- Assembly version (changes only with breaking changes) -->
+    <AssemblyVersion>$(VersionMajor).0.0.0</AssemblyVersion>
+    
+    <!-- File version (includes build number) -->
+    <FileVersion>$(VersionMajor).$(VersionMinor).$(VersionPatch).$(VersionRevision)</FileVersion>
+    
+    <!-- Informational version (full semantic version) -->
+    <InformationalVersion>$(Version)+$(Configuration)</InformationalVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Assembly Information">
+    <!-- Company and product information -->
+    <Company>Azure Project 001</Company>
+    <Product>MyWebApp</Product>
+    <Copyright>Copyright © $([System.DateTime]::Now.Year) Azure Project 001. All rights reserved.</Copyright>
+    <Authors>Azure Project 001 Development Team</Authors>
+    
+    <!-- Assembly metadata -->
+    <NeutralLanguage>en-GB</NeutralLanguage>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Build Configuration">
+    <!-- Language version -->
+    <LangVersion>12.0</LangVersion>
+    
+    <!-- Nullable reference types -->
+    <Nullable>enable</Nullable>
+    
+    <!-- Implicit usings -->
+    <ImplicitUsings>enable</ImplicitUsings>
+    
+    <!-- Generate XML documentation -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    
+    <!-- Treat warnings as errors in Release builds -->
+    <TreatWarningsAsErrors Condition="'$(Configuration)' == 'Release'">true</TreatWarningsAsErrors>
+    
+    <!-- Enable deterministic builds -->
+    <Deterministic>true</Deterministic>
+    <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Code Analysis">
+    <!-- Enable .NET analyzers -->
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisLevel>latest</AnalysisLevel>
+    
+    <!-- Enforce code style -->
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+  </PropertyGroup>
+
+  <PropertyGroup Label="NuGet Package Settings" Condition="'$(IsPackable)' != 'false'">
+    <!-- Package metadata -->
+    <PackageId>$(AssemblyName)</PackageId>
+    <PackageVersion>$(Version)</PackageVersion>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <RepositoryType>git</RepositoryType>
+    
+    <!-- Include symbols for debugging -->
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+
+</Project>

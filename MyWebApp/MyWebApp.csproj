@@ -2,13 +2,26 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
     <RootNamespace>Azure_Project_001_MyWebApp</RootNamespace>
+    
+    <!-- Project-specific metadata -->
+    <Description>Enterprise-grade ASP.NET Core Web API with clean architecture, implementing DevSecOps standards and best practices.</Description>
+    <Product>MyWebApp API</Product>
+    
+    <!-- Documentation settings -->
+    <NoWarn>$(NoWarn);1591</NoWarn><!-- Suppress missing XML comment warnings -->
+    
+    <!-- Not packable (this is an executable application) -->
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MyWebApp.Core\MyWebApp.Core.csproj" />
+    <ProjectReference Include="..\MyWebApp.Infrastructure\MyWebApp.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

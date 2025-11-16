@@ -76,3 +76,6 @@ coverage*.json
 
 # Azure Pipelines
 .azure-pipelines/
+
+# Internal Development Documentation
+.docs/

@@ -1,34 +1,48 @@
-using Azure_Project_001_MyWebApp.Models;
 using Microsoft.AspNetCore.Mvc;
+using MyWebApp.Core.Interfaces;
 
-namespace Azure_Project_001_MyWebApp.Controllers
+namespace Azure_Project_001_MyWebApp.Controllers;
+
+/// <summary>
+/// Controller for weather forecast operations.
+/// </summary>
+[ApiController]
+[Route("api/[controller]")]
+public class WeatherForecastController : ControllerBase
 {
-    [ApiController]
-    [Route("[controller]")]
-    public class WeatherForecastController : ControllerBase
+    private readonly IWeatherForecastService _weatherForecastService;
+    private readonly ILogger<WeatherForecastController> _logger;
+
+    /// <summary>
+    /// Initialises a new instance of the <see cref="WeatherForecastController"/> class.
+    /// </summary>
+    /// <param name="weatherForecastService">The weather forecast service.</param>
+    /// <param name="logger">The logger instance.</param>
+    public WeatherForecastController(
+        IWeatherForecastService weatherForecastService,
+        ILogger<WeatherForecastController> logger)
     {
-        private static readonly string[] Summaries = new[]
-        {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
+        _weatherForecastService = weatherForecastService ?? throw new ArgumentNullException(nameof(weatherForecastService));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    }
 
-        private readonly ILogger<WeatherForecastController> _logger;
+    /// <summary>
+    /// Gets weather forecasts for the specified number of days.
+    /// </summary>
+    /// <param name="days">The number of days to forecast (default is 5, max is 30).</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>A collection of weather forecasts.</returns>
+    /// <response code="200">Returns the weather forecasts.</response>
+    /// <response code="400">If the request is invalid.</response>
+    [HttpGet(Name = "GetWeatherForecast")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> Get([FromQuery] int days = 5, CancellationToken cancellationToken = default)
+    {
+        _logger.LogInformation("Received request for weather forecasts for {Days} days", days);
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
-        {
-            _logger = logger;
-        }
+        var forecasts = await _weatherForecastService.GetForecastsAsync(days, cancellationToken);
 
-        [HttpGet(Name = "GetWeatherForecast")]
-        public IEnumerable<WeatherForecast> Get()
-        {
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                TemperatureC = Random.Shared.Next(-20, 55),
-                Summary = Summaries[Random.Shared.Next(Summaries.Length)]
-            })
-            .ToArray();
-        }
+        return Ok(forecasts);
     }
 }

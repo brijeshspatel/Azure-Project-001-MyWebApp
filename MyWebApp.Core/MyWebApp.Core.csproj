@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    
+    <!-- Project-specific metadata -->
+    <Description>Core domain layer containing interfaces, models, and business logic abstractions for MyWebApp.</Description>
+    <Product>MyWebApp Core</Product>
+    
+    <!-- NuGet package settings -->
+    <IsPackable>true</IsPackable>
+    <PackageId>MyWebApp.Core</PackageId>
+    <PackageTags>domain;clean-architecture;core;interfaces</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+  </PropertyGroup>
+
+  <!-- Include README in package -->
+  <ItemGroup Condition="Exists('..\README.md')">
+    <None Include="..\README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+</Project>
