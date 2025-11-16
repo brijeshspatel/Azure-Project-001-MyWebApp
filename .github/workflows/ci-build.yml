@@ -3,8 +3,6 @@ name: CI - Build, Test & Publish
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
   workflow_dispatch:
 
 permissions:
@@ -26,6 +24,7 @@ jobs:
     outputs:
       artifact-name: ${{ env.ARTIFACT_NAME }}
       version: ${{ steps.version.outputs.version }}
+      test-count: ${{ steps.extract-test-count.outputs.test-count }}
 
     steps:
       - name: Checkout code
@@ -70,11 +69,27 @@ jobs:
           project-path: MyWebApp.Tests.Unit/MyWebApp.Tests.Unit.csproj
           configuration: Release
 
+      - name: Extract test count from results
+        id: extract-test-count
+        if: always()
+        run: |
+          # Parse test results to get count
+          if [ -f "**/test-results.trx" ]; then
+            TEST_COUNT=$(grep -oP 'total="\K[0-9]+' **/test-results.trx | head -1)
+            if [ -z "$TEST_COUNT" ]; then
+              TEST_COUNT="unknown"
+            fi
+          else
+            TEST_COUNT="unknown"
+          fi
+          echo "test-count=$TEST_COUNT" >> $GITHUB_OUTPUT
+          echo "📊 Total tests: $TEST_COUNT"
+
       - name: Publish Test Results
         uses: dorny/test-reporter@v1
         if: always()
         with:
-          name: Unit Test Results
+          name: CI Test Results (Post-Merge)
           path: '**/test-results.trx'
           reporter: dotnet-trx
           fail-on-error: true
@@ -120,13 +135,13 @@ jobs:
           if-no-files-found: error
           compression-level: 0
 
-      - name: Upload code coverage
+      - name: Upload code coverage to Codecov
         uses: codecov/codecov-action@v4
         if: success()
         with:
           files: '**/coverage.cobertura.xml'
-          flags: unittests
-          name: mywebapp-coverage
+          flags: ci-build,post-merge
+          name: mywebapp-ci-coverage
           fail_ci_if_error: false
           token: ${{ secrets.CODECOV_TOKEN }}
 
@@ -134,14 +149,15 @@ jobs:
         if: always()
         run: |
           cat >> $GITHUB_STEP_SUMMARY << EOF
-          ## 🏗️ Build & Test Summary
+          ## 🏗️ CI Build & Deployment Summary (Post-Merge)
 
           **Version**: ${{ steps.version.outputs.version }}
           **Configuration**: Release
           **Status**: ${{ job.status }}
+          **Trigger**: Push to main branch
 
           ### 📊 Metrics
-          - **Tests**: 205 unit tests
+          - **Tests**: ${{ steps.extract-test-count.outputs.test-count }} unit tests
           - **Build**: ${{ job.status == 'success' && '✅ Success' || '❌ Failed' }}
           - **Test Results**: See test reporter for details
           - **Code Coverage**: Uploaded to Codecov
@@ -152,5 +168,5 @@ jobs:
           - **Files**: mywebapp-artifact.zip, artifact-checksum.txt
 
           ### 🎯 Next Steps
-          ${{ job.status == 'success' && '✅ Artifact ready for deployment' || '⚠️ Build failed - please review errors' }}
+          ${{ job.status == 'success' && '✅ Artifact ready for deployment to Azure' || '⚠️ Build failed - please review errors' }}
           EOF
