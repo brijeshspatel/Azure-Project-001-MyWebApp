@@ -10,6 +10,9 @@
     <!-- Project-specific metadata -->
     <Description>Comprehensive unit tests for MyWebApp using xUnit, Moq, and AutoFixture.</Description>
     <Product>MyWebApp Unit Tests</Product>
+    
+    <!-- Suppress XML documentation warnings for test methods -->
+    <NoWarn>$(NoWarn);1591</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

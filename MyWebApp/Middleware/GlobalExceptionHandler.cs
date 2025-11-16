@@ -36,6 +36,9 @@ public class GlobalExceptionHandler : IExceptionHandler
         Exception exception,
         CancellationToken cancellationToken)
     {
+        ArgumentNullException.ThrowIfNull(httpContext);
+        ArgumentNullException.ThrowIfNull(exception);
+
         // Get the current Activity for W3C Trace Context
         // Activity.Current is automatically set by ASP.NET Core and contains W3C TraceContext IDs
         var activity = Activity.Current;
