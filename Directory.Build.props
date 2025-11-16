@@ -27,7 +27,7 @@
     
     <!-- Semantic versioning -->
     <VersionPrefix>$(VersionMajor).$(VersionMinor).$(VersionPatch)</VersionPrefix>
-    <Version>$(VersionPrefix)</Version>
+    <Version Condition="'$(Version)' == ''">$(VersionPrefix)</Version>
     
     <!-- Assembly version (changes only with breaking changes) -->
     <AssemblyVersion>$(VersionMajor).0.0.0</AssemblyVersion>
