@@ -20,6 +20,12 @@ public class WeatherForecastService : IWeatherForecastService
     private readonly ILogger<WeatherForecastService> _logger;
     private readonly IValidator<GetWeatherForecastRequest> _validator;
 
+    /// <summary>
+    /// Initialises a new instance of the <see cref="WeatherForecastService"/> class.
+    /// </summary>
+    /// <param name="logger">The logger instance.</param>
+    /// <param name="validator">The validator for weather forecast requests.</param>
+    /// <exception cref="ArgumentNullException">Thrown when logger or validator is null.</exception>
     public WeatherForecastService(
         ILogger<WeatherForecastService> logger,
         IValidator<GetWeatherForecastRequest> validator)
@@ -33,6 +39,8 @@ public class WeatherForecastService : IWeatherForecastService
         GetWeatherForecastRequest request,
         CancellationToken cancellationToken = default)
     {
+        ArgumentNullException.ThrowIfNull(request);
+
         _logger.LogInformation(
             "Generating weather forecasts for {Days} days{Location}",
             request.Days,
