@@ -16,7 +16,7 @@ env:
   DOTNET_VERSION: '8.0.x'
   ARTIFACT_NAME: 'mywebapp-app'
   PUBLISH_DIR: 'publish'
-  SOLUTION_FILE: 'MyWebApp.sln'
+  SOLUTION_FILE: 'Azure-Project-001-MyWebApp.sln'
 
 jobs:
   build-and-test:
