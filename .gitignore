@@ -1,0 +1,78 @@
+# .NET
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Visual Studio
+.vs/
+
+# Build Results
+[Dd]ebug/
+[Rr]elease/
+
+# Azure Functions local settings
+local.settings.json
+
+# Test Results
+TestResults/
+
+# NUGET
+*.nupkg
+.nuget/
+
+# Resharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
+
+# Rider
+.idea/
+*.sln.iml
+
+# OS generated files
+[Tt]humbs.db
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.DS_Store
+
+# Others
+*.log
+*.vspscc
+*.vssscc
+*.pdb
+*.cache
+*.dbmdl
+*.bak
+*.swp
+*.tmp
+*.orig
+*.sdf
+*.psess
+*.vsp
+*.vspx
+*.vsix
+*.docstates
+
+# User-specific files
+*.userprefs
+*.userosscache
+*.sln.docstates
+
+# JetBrains Rider
+.idea/
+*.sln.iml
+
+# DotCover
+*.dotCover
+
+# Code Coverage
+coverage/
+coverage*.json
+
+# SonarQube
+.sonar/
+
+# Azure Pipelines
+.azure-pipelines/
