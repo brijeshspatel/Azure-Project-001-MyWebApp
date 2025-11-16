@@ -1,4 +1,5 @@
 using MyWebApp.Core.Models;
+using MyWebApp.Core.Models.Requests;
 
 namespace MyWebApp.Core.Interfaces;
 
@@ -8,10 +9,14 @@ namespace MyWebApp.Core.Interfaces;
 public interface IWeatherForecastService
 {
     /// <summary>
-    /// Retrieves a collection of weather forecasts.
+    /// Retrieves a collection of weather forecasts based on the request parameters.
     /// </summary>
-    /// <param name="days">The number of days to forecast (default is 5).</param>
+    /// <param name="request">The request containing forecast parameters.</param>
     /// <param name="cancellationToken">Cancellation token for async operations.</param>
     /// <returns>A collection of weather forecast responses.</returns>
-    Task<IEnumerable<WeatherForecastResponse>> GetForecastsAsync(int days = 5, CancellationToken cancellationToken = default);
+    /// <exception cref="Exceptions.ValidationException">Thrown when the request fails validation.</exception>
+    /// <exception cref="Exceptions.WeatherForecastException">Thrown when forecast generation fails.</exception>
+    Task<IEnumerable<WeatherForecastResponse>> GetForecastsAsync(
+        GetWeatherForecastRequest request, 
+        CancellationToken cancellationToken = default);
 }

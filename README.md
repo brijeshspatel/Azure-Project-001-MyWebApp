@@ -107,4 +107,4 @@ This is a personal project for learning and demonstration purposes.
 
 ---
 
-**Note**: This project is part of Azure Project 001 and serves as a foundation for learning modern .NET development practices.
+**Note**: This project is part of MyAzureProject001 and serves as a foundation for learning modern .NET development practices.

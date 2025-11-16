@@ -1,3 +1,4 @@
+using FluentValidation;
 using MyWebApp.Core.Interfaces;
 using MyWebApp.Infrastructure.Services;
 
@@ -15,6 +16,9 @@ public class Program
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
+
+        // Register FluentValidation validators
+        builder.Services.AddValidatorsFromAssemblyContaining<MyWebApp.Core.Validators.GetWeatherForecastRequestValidator>();
 
         // Register application services
         builder.Services.AddScoped<IWeatherForecastService, WeatherForecastService>();

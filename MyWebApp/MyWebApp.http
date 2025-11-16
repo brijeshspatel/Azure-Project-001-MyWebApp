@@ -1,6 +1,23 @@
 @Azure_Project_001_MyWebApp_HostAddress = http://localhost:5030
 
-GET {{Azure_Project_001_MyWebApp_HostAddress}}/weatherforecast/
-Accept: application/json
+# Default
+GET {{Azure_Project_001_MyWebApp_HostAddress}}/api/weatherforecast
 
-###
+# Custom days
+GET {{Azure_Project_001_MyWebApp_HostAddress}}/api/weatherforecast?days=10
+
+# With location
+GET {{Azure_Project_001_MyWebApp_HostAddress}}/api/weatherforecast?days=7&location=London
+
+# All parameters
+GET {{Azure_Project_001_MyWebApp_HostAddress}}/api/weatherforecast?days=14&location=Paris&includeDetails=true
+
+# Too many days
+GET {{Azure_Project_001_MyWebApp_HostAddress}}/api/weatherforecast?days=50
+→ Error: "The number of days cannot exceed 30."
+
+# Invalid location
+GET {{Azure_Project_001_MyWebApp_HostAddress}}/api/weatherforecast?location=London@123!
+→ Error: "The location name contains invalid characters..."
+
+# Response

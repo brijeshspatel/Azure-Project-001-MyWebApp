@@ -21,7 +21,7 @@
   <PropertyGroup Label="Common Properties">
     <!-- Solution-wide version information -->
     <VersionMajor>1</VersionMajor>
-    <VersionMinor>0</VersionMinor>
+    <VersionMinor>1</VersionMinor>
     <VersionPatch>0</VersionPatch>
     <VersionRevision>0</VersionRevision>
     
@@ -41,10 +41,10 @@
 
   <PropertyGroup Label="Assembly Information">
     <!-- Company and product information -->
-    <Company>Azure Project 001</Company>
+    <Company>MyAzureProject001</Company>
     <Product>MyWebApp</Product>
-    <Copyright>Copyright © $([System.DateTime]::Now.Year) Azure Project 001. All rights reserved.</Copyright>
-    <Authors>Azure Project 001 Development Team</Authors>
+    <Copyright>Copyright Â© $([System.DateTime]::Now.Year) MyAzureProject001. All rights reserved.</Copyright>
+    <Authors>MyAzureProject001 Development Team</Authors>
     
     <!-- Assembly metadata -->
     <NeutralLanguage>en-GB</NeutralLanguage>

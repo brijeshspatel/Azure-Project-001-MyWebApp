@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using MyWebApp.Core.Interfaces;
+using MyWebApp.Core.Models.Requests;
 
 namespace Azure_Project_001_MyWebApp.Controllers;
 
@@ -27,21 +28,28 @@ public class WeatherForecastController : ControllerBase
     }
 
     /// <summary>
-    /// Gets weather forecasts for the specified number of days.
+    /// Gets weather forecasts for the specified parameters.
     /// </summary>
-    /// <param name="days">The number of days to forecast (default is 5, max is 30).</param>
+    /// <param name="request">The forecast request parameters.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>A collection of weather forecasts.</returns>
     /// <response code="200">Returns the weather forecasts.</response>
     /// <response code="400">If the request is invalid.</response>
+    /// <response code="500">If an error occurs processing the request.</response>
     [HttpGet(Name = "GetWeatherForecast")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> Get([FromQuery] int days = 5, CancellationToken cancellationToken = default)
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> Get(
+        [FromQuery] GetWeatherForecastRequest request,
+        CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Received request for weather forecasts for {Days} days", days);
+        _logger.LogInformation(
+            "Received request for weather forecasts: {Days} days{Location}",
+            request.Days,
+            string.IsNullOrWhiteSpace(request.Location) ? string.Empty : $", Location: {request.Location}");
 
-        var forecasts = await _weatherForecastService.GetForecastsAsync(days, cancellationToken);
+        var forecasts = await _weatherForecastService.GetForecastsAsync(request, cancellationToken);
 
         return Ok(forecasts);
     }

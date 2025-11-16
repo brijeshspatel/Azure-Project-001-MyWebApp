@@ -1,6 +1,9 @@
+using FluentValidation;
 using Microsoft.Extensions.Logging;
+using MyWebApp.Core.Exceptions;
 using MyWebApp.Core.Interfaces;
 using MyWebApp.Core.Models;
+using MyWebApp.Core.Models.Requests;
 
 namespace MyWebApp.Infrastructure.Services;
 
@@ -15,49 +18,71 @@ public class WeatherForecastService : IWeatherForecastService
     };
 
     private readonly ILogger<WeatherForecastService> _logger;
+    private readonly IValidator<GetWeatherForecastRequest> _validator;
 
-    public WeatherForecastService(ILogger<WeatherForecastService> logger)
+    public WeatherForecastService(
+        ILogger<WeatherForecastService> logger,
+        IValidator<GetWeatherForecastRequest> validator)
     {
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        _validator = validator ?? throw new ArgumentNullException(nameof(validator));
     }
 
     /// <inheritdoc />
-    public Task<IEnumerable<WeatherForecastResponse>> GetForecastsAsync(int days = 5, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<WeatherForecastResponse>> GetForecastsAsync(
+        GetWeatherForecastRequest request,
+        CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Generating weather forecasts for {Days} days", days);
+        _logger.LogInformation(
+            "Generating weather forecasts for {Days} days{Location}",
+            request.Days,
+            string.IsNullOrWhiteSpace(request.Location) ? string.Empty : $" for {request.Location}");
 
-        if (days <= 0)
+        // Validate the request
+        var validationResult = await _validator.ValidateAsync(request, cancellationToken);
+        if (!validationResult.IsValid)
         {
-            _logger.LogWarning("Invalid number of days requested: {Days}. Defaulting to 5", days);
-            days = 5;
+            var errors = validationResult.Errors
+                .GroupBy(e => e.PropertyName)
+                .ToDictionary(
+                    g => g.Key,
+                    g => g.Select(e => e.ErrorMessage).ToArray());
+
+            _logger.LogWarning("Validation failed for weather forecast request: {Errors}", errors);
+            throw new MyWebApp.Core.Exceptions.ValidationException(errors);
         }
 
-        if (days > 30)
+        try
         {
-            _logger.LogWarning("Too many days requested: {Days}. Limiting to 30", days);
-            days = 30;
+            var forecasts = Enumerable.Range(1, request.Days).Select(index =>
+            {
+                var forecast = new WeatherForecast
+                {
+                    Date = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(index)),
+                    TemperatureC = Random.Shared.Next(-20, 55),
+                    Summary = Summaries[Random.Shared.Next(Summaries.Length)]
+                };
+
+                return new WeatherForecastResponse
+                {
+                    Date = forecast.Date,
+                    TemperatureC = forecast.TemperatureC,
+                    TemperatureF = forecast.TemperatureF,
+                    Summary = forecast.Summary
+                };
+            }).ToList();
+
+            _logger.LogInformation("Successfully generated {Count} weather forecasts", forecasts.Count);
+
+            return forecasts;
         }
-
-        var forecasts = Enumerable.Range(1, days).Select(index =>
+        catch (Exception ex) when (ex is not DomainException)
         {
-            var forecast = new WeatherForecast
-            {
-                Date = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(index)),
-                TemperatureC = Random.Shared.Next(-20, 55),
-                Summary = Summaries[Random.Shared.Next(Summaries.Length)]
-            };
-
-            return new WeatherForecastResponse
-            {
-                Date = forecast.Date,
-                TemperatureC = forecast.TemperatureC,
-                TemperatureF = forecast.TemperatureF,
-                Summary = forecast.Summary
-            };
-        }).ToList();
-
-        _logger.LogInformation("Successfully generated {Count} weather forecasts", forecasts.Count);
-
-        return Task.FromResult<IEnumerable<WeatherForecastResponse>>(forecasts);
+            _logger.LogError(ex, "Unexpected error generating weather forecasts");
+            throw new WeatherForecastException(
+                "An unexpected error occurred whilst generating the weather forecast.",
+                "WF999",
+                ex);
+        }
     }
 }
