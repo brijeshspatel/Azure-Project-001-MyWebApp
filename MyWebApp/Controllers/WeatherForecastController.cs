@@ -44,6 +44,8 @@ public class WeatherForecastController : ControllerBase
         [FromQuery] GetWeatherForecastRequest request,
         CancellationToken cancellationToken = default)
     {
+        ArgumentNullException.ThrowIfNull(request);
+
         _logger.LogInformation(
             "Received request for weather forecasts: {Days} days{Location}",
             request.Days,
