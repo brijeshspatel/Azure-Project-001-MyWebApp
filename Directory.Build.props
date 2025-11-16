@@ -22,7 +22,7 @@
     <!-- Solution-wide version information -->
     <VersionMajor>1</VersionMajor>
     <VersionMinor>2</VersionMinor>
-    <VersionPatch>1</VersionPatch>
+    <VersionPatch>2</VersionPatch>
     <VersionRevision>0</VersionRevision>
     
     <!-- Semantic versioning -->
