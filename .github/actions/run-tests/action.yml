@@ -1,0 +1,64 @@
+name: 'Run .NET Tests'
+description: 'Composite action to run .NET tests with coverage'
+
+inputs:
+  project-path:
+    description: 'Path to the test project'
+    required: true
+  configuration:
+    description: 'Build configuration (Debug/Release)'
+    required: false
+    default: 'Release'
+  logger:
+    description: 'Test logger configuration'
+    required: false
+    default: 'trx;LogFileName=test-results.trx'
+  collect-coverage:
+    description: 'Whether to collect code coverage'
+    required: false
+    default: 'true'
+  coverage-format:
+    description: 'Code coverage format'
+    required: false
+    default: 'cobertura'
+  verbosity:
+    description: 'Test output verbosity'
+    required: false
+    default: 'normal'
+
+outputs:
+  test-results:
+    description: 'Path to test results file'
+    value: '**/test-results.trx'
+  coverage-files:
+    description: 'Path to coverage files'
+    value: '**/coverage.${{ inputs.coverage-format }}.xml'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Run tests with coverage
+      shell: bash
+      run: |
+        echo "🧪 Running tests for: ${{ inputs.project-path }}"
+        
+        if [ "${{ inputs.collect-coverage }}" = "true" ]; then
+          dotnet test ${{ inputs.project-path }} \
+            --configuration ${{ inputs.configuration }} \
+            --no-build \
+            --verbosity ${{ inputs.verbosity }} \
+            --logger "${{ inputs.logger }}" \
+            --logger "console;verbosity=detailed" \
+            --collect:"XPlat Code Coverage" \
+            --results-directory ./coverage \
+            -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=${{ inputs.coverage-format }}
+        else
+          dotnet test ${{ inputs.project-path }} \
+            --configuration ${{ inputs.configuration }} \
+            --no-build \
+            --verbosity ${{ inputs.verbosity }} \
+            --logger "${{ inputs.logger }}" \
+            --logger "console;verbosity=detailed"
+        fi
+        
+        echo "✅ Tests completed"
